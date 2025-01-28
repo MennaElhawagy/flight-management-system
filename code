@@ -1,0 +1,407 @@
+#include <iostream>
+#include <limits>
+#include <string>
+using namespace std;
+
+class Flight {
+private:
+    int Flight_ID;
+    string Model;
+    int capacity;
+    string Airline;
+    string Destination;
+    string Departure_Time;
+    double Ticket_Price;
+
+public:
+    Flight() {
+        Flight_ID = 0;
+        Model = "";
+        capacity = 0;
+        Airline = "";
+        Destination = "";
+        Departure_Time = "";
+        Ticket_Price = 0.0;
+    }
+
+    // Parameterized constructor
+    Flight(int id, string m, int cap, string line, string des, string t, double price) {
+        Flight_ID = id;
+        Model = m;
+        capacity = cap;
+        Airline = line;
+        Destination = des;
+        Departure_Time = t;
+        Ticket_Price = price;
+    }
+
+    // Setters and getters
+    void setID(int id) { Flight_ID = id; }
+    void setModel(string m) { Model = m; }
+    void setCap(int cap) { capacity = cap; }
+    void setLine(string line) { Airline = line; }
+    void setDes(string des) { Destination = des; }
+    void setTime(string t) { Departure_Time = t; }
+    void setPrice(double price) { Ticket_Price = price; }
+    int getID() { return Flight_ID; }
+    string getModel() { return Model; }
+    int getCap() { return capacity; }
+    string getLine() { return Airline; }
+    string getDes() { return Destination; }
+    string getTime() { return Departure_Time; }
+    double getPrice() { return Ticket_Price; }
+
+    void display_Flight_info() {
+        cout << "Flight ID\n" << getID() << endl;
+        cout << "Model\n" << getModel() << endl;
+        cout << "Capacity\n" << getCap() << endl;
+        cout << "Airline\n" << getLine() << endl;
+        cout << "Destination\n" << getDes() << endl;
+        cout << "Depature Time\n" << getTime() << endl;
+        cout << "Ticket price\n" << getPrice() << endl;
+    }
+};
+
+template <class T>
+class Node {
+public:
+    T data;
+    Node<T>* next;
+
+    Node(T e) {
+        data = e;
+        next = NULL;
+    }
+};
+
+template <class T>
+class FlightList {
+    Node<T>* head;
+    Node<T>* tail;
+
+public:
+    FlightList() {
+        head = NULL;
+        tail = NULL;
+    }
+    bool isDuplicate(T& flightdata) {
+        Node<T>* current = head;
+        while (current != NULL) {
+            if (current->data.getID() == flightdata.getID()) {
+                return true;
+            }
+            current = current->next;
+        }
+        return false;
+    }
+    void addFlight(T flightdata) {
+        if(isDuplicate(flightdata)){
+            cout<<"dublicated";
+        }
+        Node<T>* newnode = new Node<T>(flightdata);
+        if (head == NULL) {
+            head = tail = newnode;
+        } else {
+            tail->next = newnode;
+            tail = newnode;
+        }
+    }
+
+    void DelFlight(int flightID) {
+        Node<T>* current = head;
+        Node<T>* prev = NULL;
+        while (current != NULL) {
+            while (current->data.getID() == flightID) {
+                if (prev == NULL) {
+                    head = current->next;
+                } else {
+                    prev->next = current->next;
+                }
+                if (current == tail) {
+                    tail = prev;
+                }
+                delete (current);
+                return;
+            }
+            prev = current;
+            current = current->next;
+        }
+    }
+
+    void DisplayAll() {
+        Node<T>* current = head;
+        while (current != NULL) {
+            cout << current->data.getID() << "\t" << current->data.getModel() << "\t" << current->data.getCap() << "\t" << current->data.getLine() << "\t" << current->data.getDes() << "\t" << current->data.getTime() << "\t" << current->data.getPrice() << "\t" << endl;
+            current = current->next;
+        }
+    }
+};
+
+template <class T>
+class FlightStack {
+private:
+    Node<T>* top;
+
+public:
+    FlightStack() {
+        top = NULL;
+    }
+
+    bool isDuplicate(T& flightdata) {
+        Node<T>* current = top;
+        while (current != NULL) {
+            if (current->data.getID() == flightdata.getID()) {
+                return true;
+            }
+            current = current->next;
+        }
+        return false;
+    }
+
+    void PushFlight(T& flightdata) {
+    if (isDuplicate(flightdata)) {
+        cout << "Duplicated" << endl;
+        return;
+    }
+
+    Node<T>* temp = new Node<T>(flightdata);
+
+    if (top == nullptr) {
+        top = temp;
+    } else {
+        temp->data = flightdata;
+        temp->next = top;
+        top = temp;
+    }
+}
+
+
+    bool isEmpty() {
+        return (top == NULL);
+    }
+
+    void PopStack() {
+        if (isEmpty()) {
+            cout<<"empty"<<endl;
+            return;
+        }
+        Node<T>* current = top;
+        top = top->next;
+        delete (current);
+    }
+    void PrintStack() {
+        if (isEmpty()) {
+            cout<<"empty"<<endl;
+            return;
+        }
+        Node<T>* current = top;
+        while (current != NULL) {
+            current->data.display_Flight_info();
+            current = current->next;
+        }
+    }
+
+
+    void peek() {
+        if (!isEmpty()) {
+            top->data.display_Flight_info();
+        } else {
+            cout << "empty" << endl;
+        }
+    }
+    void editInfo(int oldID, T FlightNewData){
+        FlightStack<Flight> tempStack;
+        bool found=false;
+        if(isEmpty()){
+            cout<<"empty"<<endl;
+            return;
+        }
+        while(!isEmpty()){
+            if(top->data.getID()==oldID){
+                top->data=FlightNewData;
+                cout<<"edited"<<endl;
+                found=true;}
+                tempStack.PushFlight(top->data);
+                PopStack();}
+            while(tempStack.top!=NULL){
+                PushFlight(tempStack.top->data);
+                tempStack.PopStack();}
+            if(!found){
+            cout<<"not found"<<endl;
+        }
+        }
+
+    void deleteInfo(int flight_ID) {
+    FlightStack<T> tempStack;
+
+    while (!isEmpty()) {
+        if (top->data.getID() == flight_ID) {
+            PopStack();
+        } else {
+            tempStack.PushFlight(top->data);
+            PopStack();
+        }
+    }
+
+    while (!tempStack.isEmpty()) {
+        PushFlight(tempStack.top->data);
+        tempStack.PopStack();
+    }
+    cout<<"deleted"<<endl;
+    //cout << (tempStack.isEmpty() ? "Flight not found." : "Flight deleted.") << endl;
+    //cout << (found ? "Flight not found." : "Flight deleted.") << endl;
+}
+};
+
+
+int main() {
+    while (true) {
+        cout << "Welcome to the Flight Management System" << endl;
+        cout << "Choose one of the following options to use the system features" << endl;
+        cout << "1. Linked List" << endl;
+        cout << "2. Stack" << endl;
+        cout << "Enter your choice: ";
+
+        int choice1, choice2;
+        FlightList<Flight> flightList;
+        FlightStack<Flight> flightStack;
+
+        cin >> choice1;
+
+        switch (choice1) {
+            case 1:
+                cout << "1. Insert new flight\n2. Delete flight\n3. Display all flights\n4. Close program\n5.back to main\n";
+                cout << "Choose a function: ";
+                while (true) {
+                    cin >> choice2;
+                    switch (choice2) {
+                        case 1: {
+                            int id, cap;
+                            string model, line, des, dtime;
+                            double price;
+
+                            cout << "Enter Flight ID: ";
+                            cin >> id;
+                            cout << "Enter Model: ";
+                            cin >> model;
+                            cout << "Enter Airline: ";
+                            cin >> line;
+                            cout << "Enter Destination: ";
+                            cin >> des;
+                            cout << "Enter Departure Time: ";
+                            cin >> dtime;
+                            cout << "Enter Capacity: ";
+                            cin >> cap;
+                            cout << "Enter Ticket Price: ";
+                            cin >> price;
+
+                            Flight newflight(id, model, cap, line, des, dtime, price);
+                            flightList.addFlight(newflight);
+                            flightList.DisplayAll();
+                            break;
+                        }
+                        case 2:
+                            flightList.DelFlight(1);
+                            break;
+                        case 3:
+                            flightList.DisplayAll();
+                            break;
+                        case 4:
+                            return 0;
+                        case 5:
+                        goto main_menu;
+                        break;
+                        default:
+                            cout << "Invalid choice for linked list" << endl;
+                    }
+
+                }
+            case 2:
+                cout << "1. Insert new flight\n2. Check the latest Added Flight\n3. Print all the flights\n4. Edit flight\n5. Delete flight\n6.close program\n7. back to main\n";
+                cout << "Choose a function: ";
+                while (true) {
+                    cin >> choice2;
+                            int id, cap;
+                            string model, line, des, dtime;
+                            double price;
+                    switch (choice2) {
+                        case 1: {
+                            cout << "Enter Flight ID: ";
+                            cin >> id;
+                            cout << "Enter Model: ";
+                            cin >> model;
+                            cout << "Enter Airline: ";
+                            cin >> line;
+                            cout << "Enter Destination: ";
+                            cin >> des;
+                            cout << "Enter Departure Time: ";
+                            cin >> dtime;
+                            cout << "Enter Capacity: ";
+                            cin >> cap;
+                            cout << "Enter Ticket Price: ";
+                            cin >> price;
+
+                            Flight flightnew(id, model, cap, line, des, dtime, price);
+                            flightStack.PushFlight(flightnew);
+                            flightStack.PrintStack();
+                            break;
+                        }
+                        case 2:
+                            flightStack.peek();
+                            break;
+                        case 3:
+                            flightStack.PrintStack();
+                            break;
+                        case 4: {
+                            cout<<"choose edit: 1.id\n2.model\n3.capacity\n4.airline\n5.destination\n6.time\n7.ticket price\n"<<endl;
+                            int choice3;
+                            cin>>choice3;
+                            switch(choice3){
+                                case 1:{
+                                int oldID;
+                                cout<<"enter old id"<<endl;
+                                cin>>oldID;
+                                int NewID;
+                                cout<<"enter new id"<<endl;
+                                cin>>NewID;
+                                 //Flight newFlight(NewID, "", 0, "", "", "", 0.0);
+                                 Flight newFlight(NewID, model,cap, line,des, dtime, price);
+                                 if (flightStack.isDuplicate(newFlight)) {
+                                    cout << "Duplicated" << endl;
+                                } else {
+                                    flightStack.editInfo(oldID,newFlight);
+                                    cout << "ID updated" << endl;}
+                                //flightStack.PrintStack();
+                                break;}
+                                //case2,3,4,5,6,7;
+                            }
+                            break;
+                        }
+                        case 5: {
+                            cout << "Enter Flight ID to delete: ";
+                            int flightIDToDelete;
+                            cin >> flightIDToDelete;
+                            flightStack.deleteInfo(flightIDToDelete);
+                            break;
+                        }
+                        case 6:
+                        return 0;
+                        case 7:
+                            goto main_menu;
+                        default:
+                            cout << "Invalid choice for stack" << endl;
+
+                }
+                }
+            default:
+                cout << "Invalid choice. Please enter 1 or 2." << endl;
+                break;
+        }
+
+        main_menu:
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    return 0;
+}
